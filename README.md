@@ -1,0 +1,2 @@
+# snippetbox
+Go Snippetbox project
