@@ -27,9 +27,7 @@ type application struct {
 func main() {
 
 	addr := flag.String("addr", ":4000", "HTTP network address")
-
 	dsn := flag.String("dsn", "web:pass@(localhost:3306)/snippetbox?parseTime=true", "MySQL data source name")
-
 	flag.Parse()
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
@@ -48,13 +46,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Initialize a decoder instance...
 	formDecoder := form.NewDecoder()
 
-	// Use the scs.New() function to initialize a new session manager. Then we
-	// configure it to use our MySQL database as the session store, and set a
-	// lifetime of 12 hours (so that sessions automatically expire 12 hours
-	// after first being created).
 	sessionManager := scs.New()
 	sessionManager.Store = mysqlstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
@@ -67,10 +60,15 @@ func main() {
 		sessionManager: sessionManager,
 	}
 
+	srv := &http.Server{
+		Addr:     *addr,
+		Handler:  app.routes(),
+		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
+	}
+
 	logger.Info("starting server", slog.String("addr", ":4000"))
 
-	err = http.ListenAndServe(*addr, app.routes())
-
+	err = srv.ListenAndServe()
 	logger.Error(err.Error())
 	os.Exit(1)
 }
