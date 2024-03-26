@@ -25,7 +25,7 @@
     <label>Delete in:</label>
     <!-- And render the value of .Form.FieldErrors.expires if it is not empty. -->
     {{with .Form.FieldErrors.expires}}
-    <label class='error'>{{.}}</label>
+      <label class='error'>{{.}}</label>
     {{end}}
     <!-- Here we use the `if` action to check if the value of the re-populated
     expires field equals 365. If it does, then we render the `checked`
